@@ -1,298 +1,59 @@
+"use client";
 
-'use client'
+import {
+  ChatContainer,
+  MessageList,
+  Message,
+  MessageInput,
+  Avatar,
+  ConversationHeader,
+  InfoButton,
+  TypingIndicator,
+  VideoCallButton,
+  VoiceCallButton,
+} from "@chatscope/chat-ui-kit-react";
+import { MessageModel } from "@chatscope/chat-ui-kit-react";
+import { useRef, useState } from "react";
 
-import { MainContainer, ChatContainer, MessageList, Message, MessageInput, AttachmentButton, Avatar, ConversationHeader, InfoButton, InputToolbox, MessageSeparator, SendButton, TypingIndicator, VideoCallButton, VoiceCallButton } from '@chatscope/chat-ui-kit-react';
+const kaiIco = "https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg";
 
 export default function Home() {
+  const lastIdRef = useRef(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [msgInputValue, setMsgInputValue] = useState("");
+  const [messages, setMessages] = useState<Record<string, MessageModel>>({});
+  const handleSend = (message: unknown) => {
+    const newMessage: MessageModel = {
+      message: String(message),
+      direction: "outgoing",
+      position: "single",
+      type: "text",
+      sender: "Kai",
+      sentTime: new Date().toISOString()
+    };
+    setMessages({ ...messages, [String(lastIdRef.current)]: newMessage });
+    lastIdRef.current++;
+    setMsgInputValue("");
+    inputRef.current?.focus();
+  };
   return (
-    <div style={{ position: "relative", height: "500px" }}>
-      <MainContainer>
-        <ChatContainer
-          style={{
-            height: '500px'
-          }}
-        >
-          <ConversationHeader>
-            <Avatar
-              name="Emily"
-              src="https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg"
-            />
-            <ConversationHeader.Content
-              info="Active 10 mins ago"
-              userName="Emily"
-            />
-            <ConversationHeader.Actions>
-              <VoiceCallButton />
-              <VideoCallButton />
-              <InfoButton />
-            </ConversationHeader.Actions>
-          </ConversationHeader>
-          <MessageList typingIndicator={<TypingIndicator content="Emily is typing" />}>
-            <MessageSeparator content="Saturday, 30 November 2019" />
-            <Message
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'single',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            >
-              <Avatar
-                name="Emily"
-                src="https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg"
-              />
-            </Message>
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'single',
-                sender: 'Oliver',
-                sentTime: '15 mins ago'
-              }}
-
-            >
-              <Avatar
-                name="Emily"
-                src="https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg"
-              />
-            </Message>
-            <Message
-              avatarSpacer
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'first',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'normal',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'normal',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            >
-            </Message>
-            <Message
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'last',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            >
-              <Avatar
-                name="Emily"
-                src="https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg"
-              />
-            </Message>
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'first',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'normal',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'normal',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'last',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'first',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'last',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            >
-              <Avatar
-                name="Emily"
-                src="https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg"
-              />
-            </Message>
-            <MessageSeparator content="Saturday, 31 November 2019" />
-            <Message
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'single',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            >
-              <Avatar
-                name="Emily"
-                src="https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg"
-              />
-            </Message>
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'single',
-                sender: 'Oliver',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'first',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'normal',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'normal',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'last',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            >
-              <Avatar
-                name="Emily"
-                src="https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg"
-              />
-            </Message>
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'first',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'normal',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'normal',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'outgoing',
-                message: 'Hello my friend',
-                position: 'last',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              avatarSpacer
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'first',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            />
-            <Message
-              model={{
-                direction: 'incoming',
-                message: 'Hello my friend',
-                position: 'last',
-                sender: 'Emily',
-                sentTime: '15 mins ago'
-              }}
-            >
-              <Avatar
-                name="Emily"
-                src="https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg"
-              />
-            </Message>
-          </MessageList>
-          <MessageInput
-            placeholder="Type message here"
-          />
-          <InputToolbox>
-            <AttachmentButton />
-            <SendButton />
-          </InputToolbox>
-        </ChatContainer>
-      </MainContainer>
-    </div>
+    <ChatContainer style={{ height: "500px" }}>
+      <ConversationHeader>
+        <Avatar src={kaiIco} name="Kai" />
+        <ConversationHeader.Content userName="Kai" info="Active 10 mins ago" />
+        <ConversationHeader.Actions>
+          <VoiceCallButton />
+          <VideoCallButton />
+          <InfoButton />
+        </ConversationHeader.Actions>
+      </ConversationHeader>
+      <MessageList scrollBehavior="smooth" typingIndicator={<TypingIndicator content="Emily is typing" />}>
+        {Object.values(messages).map((message, index) => (
+          <Message key={index} model={message} />
+        ))}
+      </MessageList>
+      <MessageInput placeholder="Type message here" onSend={handleSend} onChange={setMsgInputValue} value={msgInputValue} ref={inputRef} />
+    </ChatContainer>
   );
+
 }

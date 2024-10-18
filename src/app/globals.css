@@ -1,4 +1,4 @@
-/* @tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -24,4 +24,72 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-} */
+}
+
+.cs-main-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  overflow: auto;
+  border: solid 1px #d1dbe3;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #fff;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.cs-message {
+  box-sizing: border-box;
+  font-size: 1em;
+  font-family: Arial, sans-serif;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  background-color: transparent;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.cs-message__content {
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #c6e3fa;
+  margin-top: 0;
+  padding: 0.6em 0.9em;
+  border-radius: 0.7em 0.7em 0.7em 0.7em;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-family: Arial, sans-serif;
+  font-weight: normal;
+  font-size: 0.91em;
+  font-variant: normal;
+}
+
+.cs-message-input__content-editor {
+  box-sizing: border-box;
+  flex-grow: 1;
+  background-color: #c6e3fa;
+  font-family: Arial, sans-serif;
+  outline: 0;
+  border-top: 0 none;
+  border-right: 0 none;
+  border-bottom: 0 none;
+  border-left: 0 none;
+  overflow: visible;
+  color: rgba(0, 0, 0, 0.87);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.cs-typing-indicator {
+  box-sizing: content-box;
+  font-size: inherit;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
