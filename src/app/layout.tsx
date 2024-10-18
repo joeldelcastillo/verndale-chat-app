@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import "./globals.css";
+import { AuthContextProvider } from "@/provider/AuthProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +32,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AuthContextProvider>
+          {children}
+        </AuthContextProvider>
       </body>
     </html>
   );

@@ -127,7 +127,7 @@ export default function Home() {
 
   return (
 
-    <div style={{ height: "600px", position: "relative" }}>
+    <div style={{ height: "100vh", position: "relative" }}>
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false} style={sidebarStyle}>
           <ConversationList>
