@@ -1,7 +1,7 @@
 'use client';
 
 import { Auth } from '@/provider/config';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -20,6 +20,15 @@ const Register = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message);
+      if (err.code === "auth/email-already-in-use") {
+        try {
+          await signInWithEmailAndPassword(Auth, email, password);
+          router.push("/");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+          setError(err.message);
+        }
+      }
     }
   };
 
@@ -48,12 +57,6 @@ const Register = () => {
             Login
           </button>
         </form>
-        <p className="mt-4 text-center">
-          Don&apos;t have an account?{" "}
-          <a href="/register" className="text-blue-500">
-            Register
-          </a>
-        </p>
       </div>
     </div>
   );
