@@ -26,8 +26,7 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [msgInputValue, setMsgInputValue] = useState("");
   const [messages, setMessages] = useState<Record<string, MessageModel>>({});
-  const { width, height } = useWindowSize();
-
+  const { width, } = useWindowSize();
 
   const handleSend = (message: unknown) => {
     const newMessage: MessageModel = {
