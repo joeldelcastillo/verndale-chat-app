@@ -64,7 +64,7 @@ export const updateConversation = (lastMessage: Message, conversationId: string)
   updateDoc(conversationRef, { lastMessage });
 };
 
-export const createConversation = async (conversationId: string, otherUser: string, setCurrentConversation?: (conversation: Conversation) => void, throwError: (alert: Alert) => void) => {
+export const createConversation = async (conversationId: string, otherUser: string, setCurrentConversation?: (conversation: Conversation) => void, throwError?: (alert: Alert) => void) => {
 
   const conversationRef = getConversationRef(conversationId);
   // TO DO: This has to be done through Cloud Functions / this is a security issue
@@ -78,9 +78,9 @@ export const createConversation = async (conversationId: string, otherUser: stri
   const currentPrivateUserRef = getPrivateUserRef(Auth.currentUser.uid);
 
   console.log('Creating conversation');
-  await setDoc(conversationRef, conversation, { merge: true }).catch((error) => { throwError({ type: 'Error', message: error.message }); });
-  await updateDoc(currentPrivateUserRef, { conversations: arrayUnion(conversationId) }).catch((error) => { throwError({ type: 'Error', message: error.message }); });
-  await updateDoc(otherPrivateUserRef, { conversations: arrayUnion(conversationId) }).catch((error) => { throwError({ type: 'Error', message: error.message }); });
+  await setDoc(conversationRef, conversation, { merge: true }).catch((error) => { if (throwError) throwError({ type: 'Error', message: error.message }); });
+  await updateDoc(currentPrivateUserRef, { conversations: arrayUnion(conversationId) }).catch((error) => { if (throwError) throwError({ type: 'Error', message: error.message }); });
+  await updateDoc(otherPrivateUserRef, { conversations: arrayUnion(conversationId) }).catch((error) => { if (throwError) throwError({ type: 'Error', message: error.message }); });
   if (setCurrentConversation) setCurrentConversation(conversation);
   console.log('conversation created');
 };

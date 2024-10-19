@@ -13,7 +13,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const { setCurrentUser, conversations } = useAuth();
+  const { setCurrentUser } = useAuth();
   const alert = useAlert();
 
   const handleLogin = async (e: { preventDefault: () => void; }) => {
