@@ -14,38 +14,81 @@ import {
   Sidebar,
   MessageSeparator,
 } from "@chatscope/chat-ui-kit-react";
-import { MessageModel } from "@chatscope/chat-ui-kit-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useWindowSize from "../hooks/useWindow";
 import Navbar from "../components/Navbar";
 import { useAuth } from "@/providers/AuthProvider";
+import type { Conversation as ConversationType } from "@/types/Conversation";
+import type { Message as MessageType } from "@/types/Message";
+import { getMessagesCollectionRef, sendMessage } from "@/helpers/getReferences";
+import { onSnapshot } from "firebase/firestore";
+import { Auth } from "@/providers/config";
+// import { User } from "@/types/User";
 
 const kaiIco = "https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg";
 
 export default function Home() {
-  const lastIdRef = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { conversations } = useAuth();
+  const { conversations, messages, setMessages } = useAuth() as {
+    conversations: Record<string, ConversationType>;
+    messages: Record<string, Record<string, MessageType>>;
+    setMessages: React.Dispatch<React.SetStateAction<Record<string, Record<string, MessageType>>>>;
+  };
+  const [currentConversation, setCurrentConversation] = useState<ConversationType | null>(null);
+  const [otherUserId, setOtherUserId] = useState<string>();
   const [msgInputValue, setMsgInputValue] = useState("");
-  const [messages, setMessages] = useState<Record<string, MessageModel>>({});
   const { width, } = useWindowSize();
+
+  useEffect(() => {
+    if (!currentConversation || !currentConversation.id) return;
+
+    const messagesRef = getMessagesCollectionRef(currentConversation.id);
+    // I need to add cache here
+    // const messagesQuery = queryMessages(chatId, {});
+    const unsubscribe = onSnapshot(messagesRef, (querySnapshot) => {
+      setMessages((prevMessages: Record<string, Record<string, MessageType>>) => {
+        const updatedMessages: Record<string, Record<string, MessageType>> = { ...prevMessages };
+        querySnapshot.docs.forEach((doc) => {
+          updatedMessages[currentConversation.id] = { ...updatedMessages[currentConversation.id], [doc.id]: doc.data() as MessageType };
+        });
+        // AsyncStorage.setItem('messages', JSON.stringify(updatedMessages));
+        return updatedMessages;
+      });
+    });
+
+    return () => unsubscribe();
+  }, [currentConversation]);
+
 
   // console.log(conversations);
 
   const handleSend = (message: unknown) => {
-    const newMessage: MessageModel = {
+
+
+    if (!currentConversation || !Auth || !Auth.currentUser || !otherUserId) return;
+    console.log(currentConversation);
+    const newMessage: MessageType = {
       message: String(message),
       direction: "outgoing",
       position: "single",
       type: "text",
-      sender: "Kai",
-      sentTime: new Date().toISOString()
+      sender: Auth.currentUser?.uid || "",
+      sentTime: new Date().toISOString(),
+      id: "",
+      conversation: "",
+      createdAt: new Date(),
     };
-    setMessages({ ...messages, [String(lastIdRef.current)]: newMessage });
-    lastIdRef.current++;
+    sendMessage({
+      newMessage: newMessage,
+      otherUser: otherUserId,
+      conversationId: currentConversation.id,
+      type: 'message',
+      setCurrentConversation,
+    });
     setMsgInputValue("");
     inputRef.current?.focus();
   };
+
 
   // --------------------------------------------------------- SideBar    ---------------------------------------------------------
 
@@ -58,11 +101,15 @@ export default function Home() {
 
   const handleBackClick = () => setSidebarVisible(!sidebarVisible);
 
-  const handleConversationClick = useCallback(() => {
+  const handleConversationClick = useCallback((conversation: ConversationType) => {
 
     if (sidebarVisible) {
       setSidebarVisible(false);
     }
+    setCurrentConversation(conversation);
+    setOtherUserId(conversation.members.filter((member) => member !== Auth.currentUser?.uid)[0]);
+
+    // console.log(conversation, conversation.members.filter((member) => member !== Auth.currentUser?.uid)[0]);
 
   }, [sidebarVisible, setSidebarVisible]);
 
@@ -100,7 +147,7 @@ export default function Home() {
   return (
     <div>
       <Navbar />
-      <div style={{ height: "90vh", position: "relative" }}>
+      <div style={{ height: "80vh", position: "relative" }}>
         <MainContainer responsive>
           {/* <Sidebar position="left" scrollable={false} style={sidebarStyle}> */}
           <Sidebar position="left" scrollable={false} style={width && width < 576 ? sidebarStyle : {}}>
@@ -109,7 +156,7 @@ export default function Home() {
                 Object.values(conversations).map((conversation, index) => (
                   <Conversation
                     key={index}
-                    onClick={handleConversationClick}
+                    onClick={() => handleConversationClick(conversation)}
                   >
                     <Avatar src={kaiIco} name="Lilly" status="available" style={conversationAvatarStyle} />
                     <Conversation.Content name="Office" lastSenderName="Lilly" info={conversation.lastMessage.message}
@@ -132,8 +179,18 @@ export default function Home() {
 
                 <MessageList scrollBehavior="smooth" typingIndicator={<TypingIndicator content="Emily is typing" />}>
                   <MessageSeparator content="thursday, 15 July 2021" />
-                  {Object.values(messages).map((message, index) => (
-                    <Message key={index} model={message} />
+                  {Object.values(messages[currentConversation?.id || ""] || {}).map((message, index) => (
+                    <Message
+                      key={index}
+                      model={{
+                        message: message.message,
+                        direction: message.direction,
+                        position: message.position,
+                        type: message.type,
+                        sender: message.sender,
+                        sentTime: message.sentTime,
+                      }}
+                    />
                   ))}
                 </MessageList>
                 <MessageInput placeholder="Type message here" onSend={handleSend} onChange={setMsgInputValue} value={msgInputValue} ref={inputRef} />

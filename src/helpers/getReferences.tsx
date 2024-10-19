@@ -86,7 +86,7 @@ export const createConversation = async (conversationId: string, otherUser: stri
 };
 
 type sendMessageProps = {
-  newMessages: Message[];
+  newMessage: Message;
   type: 'message';
   conversationId: string;
   otherUser: string;
@@ -98,9 +98,8 @@ export const sendMessage = (messageProps: sendMessageProps) => {
   const messagesRef = getMessagesCollectionRef(messageProps.conversationId);
   // const otherUserNotificationsRef = getUserNotificationsRef(messageProps.otherUser);
 
-
   const lastMessage: Message = {
-    ...messageProps.newMessages[0],
+    ...messageProps.newMessage,
     sender: Auth.currentUser?.uid,
     conversation: messageProps.conversationId,
     id: '',

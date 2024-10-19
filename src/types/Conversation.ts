@@ -51,7 +51,7 @@ export const conversationConverter = {
       updatedAt: data.updatedAt ? (data.updatedAt as unknown as Timestamp).toDate() : new Date(),
       createdBy: data.createdBy || '',
       lastMessage: data.lastMessage
-        ? { ...data.lastMessage, createdAt: data.lastMessage.sentTime ? (data.lastMessage.sentTime as unknown as Timestamp).toDate() : new Date() }
+        ? { ...data.lastMessage, createdAt: data.lastMessage.createdAt ? (data.lastMessage.createdAt as unknown as Timestamp).toDate() : new Date() }
         : conversationInitialState.lastMessage,
     });
   },
