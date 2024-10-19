@@ -16,6 +16,8 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import { MessageModel } from "@chatscope/chat-ui-kit-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import useWindowSize from "./hooks/useWindow";
+import Navbar from "./components/Navbar";
 
 const kaiIco = "https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg";
 
@@ -24,6 +26,9 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [msgInputValue, setMsgInputValue] = useState("");
   const [messages, setMessages] = useState<Record<string, MessageModel>>({});
+  const { width, height } = useWindowSize();
+
+
   const handleSend = (message: unknown) => {
     const newMessage: MessageModel = {
       message: String(message),
@@ -41,7 +46,7 @@ export default function Home() {
 
   // --------------------------------------------------------- SideBar    ---------------------------------------------------------
 
-  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
   const [sidebarStyle, setSidebarStyle] = useState({});
   const [chatContainerStyle, setChatContainerStyle] = useState({});
   const [conversationContentStyle, setConversationContentStyle] = useState({});
@@ -128,8 +133,10 @@ export default function Home() {
   return (
 
     <div style={{ height: "100vh", position: "relative" }}>
+      <Navbar />
       <MainContainer responsive>
-        <Sidebar position="left" scrollable={false} style={sidebarStyle}>
+        {/* <Sidebar position="left" scrollable={false} style={sidebarStyle}> */}
+        <Sidebar position="left" scrollable={false} style={width && width < 576 ? sidebarStyle : {}}>
           <ConversationList>
             <Conversation onClick={handleConversationClick}>
               <Avatar src={kaiIco} name="Lilly" status="available" style={conversationAvatarStyle} />
@@ -138,21 +145,45 @@ export default function Home() {
             </Conversation>
           </ConversationList>
         </Sidebar>
-        <ChatContainer style={chatContainerStyle}>
-          <ConversationHeader>
-            <ConversationHeader.Back onClick={handleBackClick} />
-            <Avatar src={kaiIco} name="Zoe" />
-            <ConversationHeader.Content userName="Zoe" info="Active 10 mins ago" />
-          </ConversationHeader>
+        {/* <ChatContainer style={chatContainerStyle}> */}
+        {
+          sidebarVisible === false ? (
+            <ChatContainer style={chatContainerStyle}>
+              <ConversationHeader>
+                <ConversationHeader.Back onClick={handleBackClick} />
+                <Avatar src={kaiIco} name="Zoe" />
+                <ConversationHeader.Content userName="Zoe" info="Active 10 mins ago" />
+              </ConversationHeader>
 
-          <MessageList scrollBehavior="smooth" typingIndicator={<TypingIndicator content="Emily is typing" />}>
-            <MessageSeparator content="thursday, 15 July 2021" />
-            {Object.values(messages).map((message, index) => (
-              <Message key={index} model={message} />
-            ))}
-          </MessageList>
-          <MessageInput placeholder="Type message here" onSend={handleSend} onChange={setMsgInputValue} value={msgInputValue} ref={inputRef} />
-        </ChatContainer>
+              <MessageList scrollBehavior="smooth" typingIndicator={<TypingIndicator content="Emily is typing" />}>
+                <MessageSeparator content="thursday, 15 July 2021" />
+                {Object.values(messages).map((message, index) => (
+                  <Message key={index} model={message} />
+                ))}
+              </MessageList>
+              <MessageInput placeholder="Type message here" onSend={handleSend} onChange={setMsgInputValue} value={msgInputValue} ref={inputRef} />
+            </ChatContainer>
+          ) : (
+            <ChatContainer style={width && width < 576 ? chatContainerStyle : {}}>
+              <MessageList>
+                <MessageList.Content
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    fontSize: '1.2em',
+                    height: '100%',
+                    justifyContent: 'center',
+                    textAlign: 'center'
+                  }}
+                >
+                  {width}
+                </MessageList.Content>
+              </MessageList>
+            </ChatContainer>
+          )
+
+        }
+
       </MainContainer>
     </div>
 
