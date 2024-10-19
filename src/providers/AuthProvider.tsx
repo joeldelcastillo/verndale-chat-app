@@ -3,37 +3,48 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
   UserCredential
 } from 'firebase/auth';
-import { Auth } from './config';
-import { PrivateUser, privateUserInitialState, User, userInitialState } from '@/types/User';
+import { Auth, Firestore } from './config';
+import { PrivateUser, privateUserInitialState, User, userConverter, userInitialState } from '@/types/User';
 import { useRouter } from 'next/navigation';
 import { Conversation } from '@/types/Conversation';
 import { Message } from '@/types/Message';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { getPrivateUserRef } from '@/helpers/getReferences';
 
 
 // Create auth context
 const AuthContext = createContext<AuthContextType>({
   currentUser: userInitialState,
+  setCurrentUser: () => { },
   privateUser: privateUserInitialState,
+  setCurrentPrivateUser: () => { },
   users: {},
+  setUsers: () => { },
   conversations: {},
+  setConversations: () => { },
   messages: {},
-  signUp: async () => { throw new Error("signUp function not implemented"); },
-  logIn: async () => { throw new Error("logIn function not implemented"); },
-  logOut: async () => { throw new Error("logOut function not implemented"); }
+  setMessages: () => { },
+  signUp: async () => ({} as UserCredential),
+  logIn: async () => ({} as UserCredential),
+  logOut: async () => { },
 });
 
 // Make auth context available across the app by exporting it
 interface AuthContextType {
   currentUser: User;
+  setCurrentUser: (user: User) => void;
   privateUser: PrivateUser;
+  setCurrentPrivateUser: (user: PrivateUser) => void;
   users: Record<string, User>;
+  setUsers: (users: Record<string, User>) => void;
   conversations: Record<string, Conversation>;
+  setConversations: (conversations: Record<string, Conversation>) => void;
   messages: Record<string, Record<string, Message>>;
+  setMessages: (messages: Record<string, Record<string, Message>>) => void;
 
   signUp: (email: string, password: string) => Promise<UserCredential>;
   logIn: (email: string, password: string) => Promise<UserCredential>;
@@ -55,31 +66,43 @@ export const AuthContextProvider = ({
   const [conversations, setConversations] = useState<Record<string, Conversation>>({});
   const [messages, setMessages] = useState<Record<string, Record<string, Message>>>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const [hasNavigated, setHasNavigated] = useState<boolean>(false);
   const router = useRouter();
 
-  // Update the state depending on auth
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(Auth, (user) => {
-      // Only download the user data if the user is logged in
-      if (user) {
-        // Download the user data from the database
-
-        // setUser({
-        //   email: user.email,
-        //   uid: user.uid
-        // });
-        router.push("/");
-
+    const unsubscribeAuth = Auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = doc(Firestore, 'users', userAuth.uid).withConverter(userConverter);
+        const unsubscribeFirestore = onSnapshot(userRef, async (doc) => { if (doc.exists()) { setCurrentUser(doc.data()) } });
+        setHasNavigated(true);
+        router.push('/');
+        return unsubscribeFirestore;
       } else {
-        // setUser({ email: null, uid: null });
-        router.push("/register");
+        setCurrentUser(userInitialState);
+        router.replace('/register');
       }
     });
-
     setLoading(false);
+    return unsubscribeAuth;
+  }, [hasNavigated, router]);
 
-    return () => unsubscribe();
-  }, []);
+
+  useEffect(() => {
+    const fetchPrivateData = async () => {
+      if (!Auth.currentUser?.uid) return;
+
+      const privateUserRef = getPrivateUserRef(Auth.currentUser.uid);
+
+      const unsubscribeFirestore = onSnapshot(privateUserRef, (doc) => {
+        if (doc.exists()) {
+          setPrivateUser(doc.data());
+        }
+      });
+      return unsubscribeFirestore;
+    };
+    fetchPrivateData();
+  }, [currentUser]);
+
 
   // Sign up the user
   const signUp = (email: string, password: string) => {
@@ -99,7 +122,21 @@ export const AuthContextProvider = ({
 
   // Wrap the children with the context provider
   return (
-    <AuthContext.Provider value={{ currentUser, privateUser, users, conversations, messages, signUp, logIn, logOut }}>
+    <AuthContext.Provider value={{
+      currentUser,
+      setCurrentUser,
+      privateUser,
+      setCurrentPrivateUser: setPrivateUser,
+      users,
+      setUsers,
+      conversations,
+      setConversations,
+      messages,
+      setMessages,
+      signUp,
+      logIn,
+      logOut
+    }}>
       {loading ? null : children}
     </AuthContext.Provider>
   );

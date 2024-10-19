@@ -4,8 +4,8 @@ import localFont from "next/font/local";
 
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import "./globals.css";
-import { AuthContextProvider } from "@/provider/AuthProvider";
-import { AlertProvider } from "@/provider/AlertProvider";
+import { AuthContextProvider } from "@/providers/AuthProvider";
+import { AlertProvider } from "@/providers/AlertProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

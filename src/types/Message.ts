@@ -1,5 +1,5 @@
 import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from 'firebase/firestore';
-import { Auth } from '@/provider/config';
+import { Auth } from '@/providers/config';
 import { MessageModel, MessagePayload } from '@chatscope/chat-ui-kit-react';
 import { MessageDirection, MessageType } from '@chatscope/chat-ui-kit-react/src/types/unions';
 

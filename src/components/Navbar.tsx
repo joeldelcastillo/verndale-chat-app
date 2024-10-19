@@ -1,6 +1,6 @@
 // components/Navbar.js
 
-import { Auth } from '@/provider/config';
+import { Auth } from '@/providers/config';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-type AlertType = "Success" | "Error" | "Warning";
+export type AlertType = "Success" | "Error" | "Warning";
 
 type AlertProps = {
   type: AlertType;

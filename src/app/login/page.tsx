@@ -1,6 +1,6 @@
 'use client';
 
-import { Auth } from '@/provider/config';
+import { Auth } from '@/providers/config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

@@ -1,6 +1,9 @@
 'use client';
 
-import { Auth } from '@/provider/config';
+import { createUserProfile } from '@/helpers/getReferences';
+import { useAlert } from '@/hooks/useAlert';
+import { useAuth } from '@/providers/AuthProvider';
+import { Auth } from '@/providers/config';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -10,25 +13,33 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { setCurrentUser } = useAuth();
+  const alert = useAlert();
 
   const handleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
     try {
-      await createUserWithEmailAndPassword(Auth, email, password);
-      router.push("/chat");
+      const currentAuth = await createUserWithEmailAndPassword(Auth, email, password);
+      const createdUser = await createUserProfile(currentAuth.user.uid, email, email, "", alert.showAlert);
+      if (!createdUser) return;
+      alert.showAlert('Success', 'User created successfully!');
+      setCurrentUser(createdUser);
+      router.push("/");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setError(err.message);
       if (err.code === "auth/email-already-in-use") {
         try {
-          await signInWithEmailAndPassword(Auth, email, password);
+          await signInWithEmailAndPassword(Auth, email, password)
+
+
           router.push("/");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
           setError(err.message);
         }
       }
+      setError(err.message);
     }
   };
 

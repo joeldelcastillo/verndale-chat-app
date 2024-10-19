@@ -1,6 +1,6 @@
 import { Timestamp } from '@firebase/firestore';
 import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, serverTimestamp } from 'firebase/firestore';
-import { Auth } from '@/provider/config';
+import { Auth } from '@/providers/config';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // The cloud functions have to constantly update the requests
 

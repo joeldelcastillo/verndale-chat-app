@@ -1,10 +1,11 @@
-import { addDoc, arrayUnion, collection, doc, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { addDoc, arrayUnion, collection, doc, getDoc, query, setDoc, updateDoc, where } from 'firebase/firestore';
 
-import { Auth, Firestore } from '../provider/config';
+import { Auth, Firestore } from '../providers/config';
 import { privateUserConverter, userConverter } from '@/types/User';
 import { Message, messageConverter, messageInitialState } from '@/types/Message';
 import { Conversation, conversationConverter, conversationInitialState } from '@/types/Conversation';
-import { Alert } from '../provider/AlertProvider';
+import { Alert } from '../providers/AlertProvider';
+import { AlertType } from '@/components/Alert';
 
 
 export const getUserRef = (uid: string) => {
@@ -32,6 +33,31 @@ export const getConversationsCollectionRef = (conversations: string[]) => {
   if (conversations.length === 0 || !conversations) return;
   return query(collection(Firestore, 'conversations'), where('id', 'in', conversations || [])).withConverter(conversationConverter);
 };
+
+export const createUserProfile = async (uid: string, name: string, email: string, avatar: string, throwError?: (alert: AlertType, message: string) => void) => {
+  const userRef = getUserRef(uid);
+  const privateUserRef = getPrivateUserRef(uid);
+  const user = { id: uid, name, email, avatar, isOnline: false, createdAt: new Date(), updatedAt: new Date() };
+  const privateUser = { notifications: [], chats: ['office'] };
+  const userDoc = await getDoc(userRef);
+  if (userDoc.exists()) {
+    console.log('User already exists in Firestore!');
+    return userDoc.data();
+  } else {
+    await setDoc(userRef, user).catch((error) => {
+      console.error(error);
+      if (throwError) throwError('Error', error.message);
+      return null;
+    });
+    await setDoc(privateUserRef, privateUser).catch((error) => {
+      console.error(error);
+      if (throwError) throwError('Error', error.message);
+      return null;
+    });
+    return user;
+  }
+}
+
 
 export const updateConversation = (lastMessage: Message, conversationId: string) => {
   const conversationRef = getConversationRef(conversationId);

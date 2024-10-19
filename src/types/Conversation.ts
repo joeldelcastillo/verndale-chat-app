@@ -1,6 +1,6 @@
 import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp, serverTimestamp } from 'firebase/firestore';
 // import { IMessage } from 'react-native-gifted-chat';
-import { Auth } from '@/provider/config';
+import { Auth } from '@/providers/config';
 
 import { Message } from './Message';
 // import { Message } from './MessageTypes';
