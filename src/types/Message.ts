@@ -6,7 +6,7 @@ import { MessageDirection, MessageType } from '@chatscope/chat-ui-kit-react/src/
 
 export class Message implements MessageModel {
   id: string | number;
-  chat: string;
+  conversation: string;
   message?: string;
   sentTime?: string;
   sender?: string;
@@ -18,7 +18,7 @@ export class Message implements MessageModel {
 
   constructor(data: Message) {
     this.id = data.id;
-    this.chat = data.chat;
+    this.conversation = data.conversation;
     this.message = data.message;
     this.sentTime = data.sentTime;
     this.sender = data.sender;
@@ -49,7 +49,7 @@ export const messageConverter = {
 
 export const messageInitialState: Message = {
   id: '',
-  chat: '',
+  conversation: '',
   message: '',
   sentTime: '',
   sender: '',

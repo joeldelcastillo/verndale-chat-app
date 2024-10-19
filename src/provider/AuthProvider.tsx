@@ -9,13 +9,19 @@ import {
   UserCredential
 } from 'firebase/auth';
 import { Auth } from './config';
-import { User, userInitialState } from '@/types/User';
+import { PrivateUser, privateUserInitialState, User, userInitialState } from '@/types/User';
 import { useRouter } from 'next/navigation';
+import { Conversation } from '@/types/Conversation';
+import { Message } from '@/types/Message';
 
 
 // Create auth context
 const AuthContext = createContext<AuthContextType>({
-  user: userInitialState,
+  currentUser: userInitialState,
+  privateUser: privateUserInitialState,
+  users: {},
+  conversations: {},
+  messages: {},
   signUp: async () => { throw new Error("signUp function not implemented"); },
   logIn: async () => { throw new Error("logIn function not implemented"); },
   logOut: async () => { throw new Error("logOut function not implemented"); }
@@ -23,7 +29,12 @@ const AuthContext = createContext<AuthContextType>({
 
 // Make auth context available across the app by exporting it
 interface AuthContextType {
-  user: User;
+  currentUser: User;
+  privateUser: PrivateUser;
+  users: Record<string, User>;
+  conversations: Record<string, Conversation>;
+  messages: Record<string, Record<string, Message>>;
+
   signUp: (email: string, password: string) => Promise<UserCredential>;
   logIn: (email: string, password: string) => Promise<UserCredential>;
   logOut: () => Promise<void>;
@@ -38,14 +49,21 @@ export const AuthContextProvider = ({
   children: React.ReactNode;
 }) => {
   // Define the constants for the user and loading state
-  const [user, setUser] = useState<User>(userInitialState);
+  const [currentUser, setCurrentUser] = useState<User>(userInitialState);
+  const [privateUser, setPrivateUser] = useState<PrivateUser>(privateUserInitialState);
+  const [users, setUsers] = useState<Record<string, User>>({});
+  const [conversations, setConversations] = useState<Record<string, Conversation>>({});
+  const [messages, setMessages] = useState<Record<string, Record<string, Message>>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   // Update the state depending on auth
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(Auth, (user) => {
+      // Only download the user data if the user is logged in
       if (user) {
+        // Download the user data from the database
+
         // setUser({
         //   email: user.email,
         //   uid: user.uid
@@ -75,13 +93,13 @@ export const AuthContextProvider = ({
 
   // Logout the user
   const logOut = async () => {
-    setUser(userInitialState);
+    setCurrentUser(userInitialState);
     return await signOut(Auth);
   };
 
   // Wrap the children with the context provider
   return (
-    <AuthContext.Provider value={{ user, signUp, logIn, logOut }}>
+    <AuthContext.Provider value={{ currentUser, privateUser, users, conversations, messages, signUp, logIn, logOut }}>
       {loading ? null : children}
     </AuthContext.Provider>
   );

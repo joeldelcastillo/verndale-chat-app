@@ -66,7 +66,7 @@ export const conversationInitialState: Conversation = {
   updatedBy: Auth.currentUser?.uid || '',
   lastMessage: {
     id: '',
-    chat: '',
+    conversation: '',
     message: '',
     sentTime: '',
     sender: '',
