@@ -18,15 +18,19 @@ import { MessageModel } from "@chatscope/chat-ui-kit-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useWindowSize from "../hooks/useWindow";
 import Navbar from "../components/Navbar";
+import { useAuth } from "@/providers/AuthProvider";
 
 const kaiIco = "https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg";
 
 export default function Home() {
   const lastIdRef = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { conversations } = useAuth();
   const [msgInputValue, setMsgInputValue] = useState("");
   const [messages, setMessages] = useState<Record<string, MessageModel>>({});
   const { width, } = useWindowSize();
+
+  // console.log(conversations);
 
   const handleSend = (message: unknown) => {
     const newMessage: MessageModel = {
@@ -93,42 +97,6 @@ export default function Home() {
 
   }, [sidebarVisible, setSidebarVisible, setConversationContentStyle, setConversationAvatarStyle, setSidebarStyle, setChatContainerStyle]);
 
-
-  // --------------------------------------------------------- MessageList ---------------------------------------------------------
-
-  const idRef = useRef(7);
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  useEffect(() => {
-    if (loadingMore === true) {
-      setTimeout(() => {
-        const newConversations = [];
-
-        // Add 4 conversations                      
-        for (let i = 0; i < 4; i++) {
-          newConversations.push({ _id: ++idRef.current, name: `Emily ${idRef.current}`, avatarSrc: kaiIco });
-        }
-
-        setConversations(conversations.concat(newConversations));
-        setLoadingMore(false);
-
-      }, 1500);
-    }
-  }, [loadingMore]);
-
-  // const onYReachEnd = () => setLoadingMore(true);
-
-  const [conversations, setConversations] = useState([
-    { _id: 0, name: "Lilly", avatarSrc: kaiIco },
-    { _id: 1, name: "Joe", avatarSrc: kaiIco },
-    { _id: 2, name: "Emily", avatarSrc: kaiIco },
-    { _id: 3, name: "Kai", avatarSrc: kaiIco },
-    { _id: 4, name: "Akane", avatarSrc: kaiIco },
-    { _id: 5, name: "Eliot", avatarSrc: kaiIco },
-    { _id: 6, name: "Zoe", avatarSrc: kaiIco },
-    { _id: 7, name: "Patrik", avatarSrc: kaiIco }
-  ]);
-
   return (
     <div>
       <Navbar />
@@ -137,11 +105,19 @@ export default function Home() {
           {/* <Sidebar position="left" scrollable={false} style={sidebarStyle}> */}
           <Sidebar position="left" scrollable={false} style={width && width < 576 ? sidebarStyle : {}}>
             <ConversationList>
-              <Conversation onClick={handleConversationClick}>
-                <Avatar src={kaiIco} name="Lilly" status="available" style={conversationAvatarStyle} />
-                <Conversation.Content name="Lilly" lastSenderName="Lilly" info="Yes i can do it for you"
-                  style={conversationContentStyle} />
-              </Conversation>
+              {
+                Object.values(conversations).map((conversation, index) => (
+                  <Conversation
+                    key={index}
+                    onClick={handleConversationClick}
+                  >
+                    <Avatar src={kaiIco} name="Lilly" status="available" style={conversationAvatarStyle} />
+                    <Conversation.Content name="Office" lastSenderName="Lilly" info={conversation.lastMessage.message}
+                      style={conversationContentStyle} />
+                    {/* <Avatar src={kaiIco} name={'Office'} status="available" style={conversationAvatarStyle} /> */}
+                  </Conversation>
+                ))
+              }
             </ConversationList>
           </Sidebar>
           {/* <ChatContainer style={chatContainerStyle}> */}

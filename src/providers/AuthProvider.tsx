@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { Conversation } from '@/types/Conversation';
 import { Message } from '@/types/Message';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { getPrivateUserRef } from '@/helpers/getReferences';
+import { getConversationsCollectionRef, getPrivateUserRef } from '@/helpers/getReferences';
 
 
 // Create auth context
@@ -102,6 +102,25 @@ export const AuthContextProvider = ({
     };
     fetchPrivateData();
   }, [currentUser]);
+
+
+  useEffect(() => {
+    console.log('privateUser', privateUser);
+    if (!privateUser?.chats || privateUser?.chats.length === 0) return;
+    const conversationsRef = getConversationsCollectionRef(privateUser?.chats);
+    if (!conversationsRef) return;
+    const unsubscribe = onSnapshot(conversationsRef, (querySnapshot) => {
+      setConversations((prevChats) => {
+        const updatedConversations = { ...prevChats };
+        querySnapshot.docs.forEach((doc) => {
+          updatedConversations[doc.id] = { ...doc.data(), id: doc.id };
+        });
+        console.log('updatedConversations', updatedConversations);
+        return updatedConversations;
+      });
+    });
+    return () => unsubscribe();
+  }, [privateUser?.chats]);
 
 
   // Sign up the user

@@ -13,7 +13,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const { setCurrentUser } = useAuth();
+  const { setCurrentUser, conversations } = useAuth();
   const alert = useAlert();
 
   const handleLogin = async (e: { preventDefault: () => void; }) => {
@@ -31,8 +31,7 @@ const Register = () => {
       if (err.code === "auth/email-already-in-use") {
         try {
           await signInWithEmailAndPassword(Auth, email, password)
-
-
+          alert.showAlert('Success', 'User logged in successfully!');
           router.push("/");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
