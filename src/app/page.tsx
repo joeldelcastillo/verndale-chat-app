@@ -16,8 +16,8 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import { MessageModel } from "@chatscope/chat-ui-kit-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import useWindowSize from "./hooks/useWindow";
-import Navbar from "./components/Navbar";
+import useWindowSize from "../hooks/useWindow";
+import Navbar from "../components/Navbar";
 
 const kaiIco = "https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg";
 
@@ -130,61 +130,63 @@ export default function Home() {
   ]);
 
   return (
-
-    <div style={{ height: "100vh", position: "relative" }}>
+    <div>
       <Navbar />
-      <MainContainer responsive>
-        {/* <Sidebar position="left" scrollable={false} style={sidebarStyle}> */}
-        <Sidebar position="left" scrollable={false} style={width && width < 576 ? sidebarStyle : {}}>
-          <ConversationList>
-            <Conversation onClick={handleConversationClick}>
-              <Avatar src={kaiIco} name="Lilly" status="available" style={conversationAvatarStyle} />
-              <Conversation.Content name="Lilly" lastSenderName="Lilly" info="Yes i can do it for you"
-                style={conversationContentStyle} />
-            </Conversation>
-          </ConversationList>
-        </Sidebar>
-        {/* <ChatContainer style={chatContainerStyle}> */}
-        {
-          sidebarVisible === false ? (
-            <ChatContainer style={chatContainerStyle}>
-              <ConversationHeader>
-                <ConversationHeader.Back onClick={handleBackClick} />
-                <Avatar src={kaiIco} name="Zoe" />
-                <ConversationHeader.Content userName="Zoe" info="Active 10 mins ago" />
-              </ConversationHeader>
+      <div style={{ height: "90vh", position: "relative" }}>
+        <MainContainer responsive>
+          {/* <Sidebar position="left" scrollable={false} style={sidebarStyle}> */}
+          <Sidebar position="left" scrollable={false} style={width && width < 576 ? sidebarStyle : {}}>
+            <ConversationList>
+              <Conversation onClick={handleConversationClick}>
+                <Avatar src={kaiIco} name="Lilly" status="available" style={conversationAvatarStyle} />
+                <Conversation.Content name="Lilly" lastSenderName="Lilly" info="Yes i can do it for you"
+                  style={conversationContentStyle} />
+              </Conversation>
+            </ConversationList>
+          </Sidebar>
+          {/* <ChatContainer style={chatContainerStyle}> */}
+          {
+            sidebarVisible === false ? (
+              <ChatContainer style={chatContainerStyle}>
+                <ConversationHeader>
+                  <ConversationHeader.Back onClick={handleBackClick} />
+                  <Avatar src={kaiIco} name="Zoe" />
+                  <ConversationHeader.Content userName="Zoe" info="Active 10 mins ago" />
+                </ConversationHeader>
 
-              <MessageList scrollBehavior="smooth" typingIndicator={<TypingIndicator content="Emily is typing" />}>
-                <MessageSeparator content="thursday, 15 July 2021" />
-                {Object.values(messages).map((message, index) => (
-                  <Message key={index} model={message} />
-                ))}
-              </MessageList>
-              <MessageInput placeholder="Type message here" onSend={handleSend} onChange={setMsgInputValue} value={msgInputValue} ref={inputRef} />
-            </ChatContainer>
-          ) : (
-            <ChatContainer style={width && width < 576 ? chatContainerStyle : {}}>
-              <MessageList>
-                <MessageList.Content
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    fontSize: '1.2em',
-                    height: '100%',
-                    justifyContent: 'center',
-                    textAlign: 'center'
-                  }}
-                >
-                  {width}
-                </MessageList.Content>
-              </MessageList>
-            </ChatContainer>
-          )
+                <MessageList scrollBehavior="smooth" typingIndicator={<TypingIndicator content="Emily is typing" />}>
+                  <MessageSeparator content="thursday, 15 July 2021" />
+                  {Object.values(messages).map((message, index) => (
+                    <Message key={index} model={message} />
+                  ))}
+                </MessageList>
+                <MessageInput placeholder="Type message here" onSend={handleSend} onChange={setMsgInputValue} value={msgInputValue} ref={inputRef} />
+              </ChatContainer>
+            ) : (
+              <ChatContainer style={width && width < 576 ? chatContainerStyle : {}}>
+                <MessageList>
+                  <MessageList.Content
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      fontSize: '1.2em',
+                      height: '100%',
+                      justifyContent: 'center',
+                      textAlign: 'center'
+                    }}
+                  >
+                    {width}
+                  </MessageList.Content>
+                </MessageList>
+              </ChatContainer>
+            )
 
-        }
+          }
 
-      </MainContainer>
+        </MainContainer>
+      </div>
     </div>
+
 
 
   );
