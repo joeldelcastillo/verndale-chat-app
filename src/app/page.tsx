@@ -172,26 +172,33 @@ export default function Home() {
             sidebarVisible === false ? (
               <ChatContainer style={chatContainerStyle}>
                 <ConversationHeader>
-                  <ConversationHeader.Back onClick={handleBackClick} />
+                  <ConversationHeader.Back onClick={handleBackClick} >
+                    <button onClick={handleBackClick} >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                      </svg>
+                    </button>
+                  </ConversationHeader.Back>
                   <Avatar src={kaiIco} name="Zoe" />
                   <ConversationHeader.Content userName="Zoe" info="Active 10 mins ago" />
                 </ConversationHeader>
 
                 <MessageList scrollBehavior="smooth" typingIndicator={<TypingIndicator content="Emily is typing" />}>
                   <MessageSeparator content="thursday, 15 July 2021" />
-                  {Object.values(messages[currentConversation?.id || ""] || {}).map((message, index) => (
-                    <Message
-                      key={index}
-                      model={{
-                        message: message.message,
-                        direction: message.direction,
-                        position: message.position,
-                        type: message.type,
-                        sender: message.sender,
-                        sentTime: message.sentTime,
-                      }}
-                    />
-                  ))}
+                  {Object.values(messages[currentConversation?.id || ""] || {}).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+                    .map((message, index) => (
+                      <Message
+                        key={index}
+                        model={{
+                          message: message.message,
+                          direction: message.direction,
+                          position: message.position,
+                          type: message.type,
+                          sender: message.sender,
+                          sentTime: message.sentTime,
+                        }}
+                      />
+                    ))}
                 </MessageList>
                 <MessageInput placeholder="Type message here" onSend={handleSend} onChange={setMsgInputValue} value={msgInputValue} ref={inputRef} />
               </ChatContainer>
@@ -213,7 +220,6 @@ export default function Home() {
                 </MessageList>
               </ChatContainer>
             )
-
           }
 
         </MainContainer>
