@@ -35,8 +35,10 @@ export const getConversationRef = (conversationId: string) => {
 
 // Puede dar error de limite de conversations
 export const getConversationsCollectionRef = (uid: string) => {
-  return query(collection(Firestore, 'conversations'), where('members', 'array-contains', uid))
-    .withConverter(conversationConverter);
+  return query(
+    collection(Firestore, 'conversations'),
+    where('members', 'array-contains', uid),
+  ).withConverter(conversationConverter);
 };
 
 export const createUserProfile = async (uid: string, name: string, email: string, avatar: string, throwError?: (alert: AlertType, message: string) => void) => {

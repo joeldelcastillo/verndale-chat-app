@@ -103,7 +103,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     const fetchConversations = async () => {
       if (!Auth.currentUser) return;
       const conversationsRef = getConversationsCollectionRef(Auth.currentUser.uid);
-      if (!conversationsRef) return;
       const unsubscribe = onSnapshot(conversationsRef, (querySnapshot) => {
         setConversations((prevChats) => {
           const updatedConversations = { ...prevChats };
