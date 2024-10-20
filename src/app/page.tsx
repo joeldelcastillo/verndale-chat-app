@@ -14,7 +14,7 @@ import {
   Sidebar,
   MessageSeparator,
 } from "@chatscope/chat-ui-kit-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import useWindowSize from "../hooks/useWindow";
 import Navbar from "../components/Navbar";
 import { useAuth } from "@/providers/AuthProvider";
@@ -38,6 +38,7 @@ export default function Home() {
       React.SetStateAction<Record<string, Record<string, MessageType>>>
     >;
   };
+  console.log(users);
 
   // Current conversation state
   const inputRef = useRef<HTMLInputElement>(null);
@@ -173,6 +174,44 @@ export default function Home() {
   ]);
 
   const randomAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+  const officeAvatar = "https://yt3.googleusercontent.com/-VpouxzpWEXoxtqw2hJe6c8-JQ-WeQ4Z8LmdRK8aSMWLTq4HXfzVmSUsevYX4cJ-7k8SNpCVaqI=s900-c-k-c0x00ffffff-no-rj";
+
+  function conversationAvatarContent(conversation: ConversationType, index: number) {
+    const currentOtherUser = users[conversation.members.filter((member) => member !== Auth.currentUser?.uid)[0]];
+    if (conversation.lastMessage.sender) {
+      return (
+        <Conversation
+          key={index}
+          onClick={() => handleConversationClick(conversation)}
+        >
+          <Avatar
+            src={conversation.id === "office" ? officeAvatar : currentOtherUser?.avatar || randomAvatar}
+            status="available"
+            style={conversationAvatarStyle}
+          />
+
+          <Conversation.Content
+            name={conversation.id === "office" ? "Office" : currentOtherUser?.name || "User"}
+            lastSenderName={users[conversation.lastMessage.sender].name || ''}
+            info={conversation.lastMessage.message}
+            style={conversationContentStyle}
+          />
+        </Conversation>
+      );
+    }
+  }
+
+
+  function avatarContent(conversation: ConversationType) {
+    const currentOtherUser = users[conversation.members.filter((member) => member !== Auth.currentUser?.uid)[0]];
+    return (
+      <Avatar
+        src={conversation.id === "office" ? officeAvatar : currentOtherUser?.avatar || randomAvatar}
+        status="available"
+        style={conversationAvatarStyle}
+      />
+    );
+  }
 
   return (
     <div>
@@ -186,28 +225,7 @@ export default function Home() {
           >
             <ConversationList>
               {Object.values(conversations).map((conversation, index) => (
-                <Conversation
-                  key={index}
-                  onClick={() => handleConversationClick(conversation)}
-                >
-
-                  {
-                    conversation.lastMessage.sender &&
-                    <>
-                      <Avatar
-                        src={conversation.id === "office" ? randomAvatar : users[conversation.lastMessage.sender].avatar}
-                        status="available"
-                        style={conversationAvatarStyle}
-                      />
-                      <Conversation.Content
-                        name={conversation.id === "office" ? "Office" : users[conversation.lastMessage.sender].name}
-                        lastSenderName={users[conversation.lastMessage.sender].name || ''}
-                        info={conversation.lastMessage.message}
-                        style={conversationContentStyle}
-                      />
-                    </>
-                  }
-                </Conversation>
+                conversationAvatarContent(conversation, index)
               ))}
             </ConversationList>
           </Sidebar>
@@ -232,7 +250,10 @@ export default function Home() {
                     </svg>
                   </button>
                 </ConversationHeader.Back>
-                <Avatar src={kaiIco} />
+                {
+                  currentConversation &&
+                  avatarContent(currentConversation)
+                }
                 <ConversationHeader.Content
                   userName={currentConversation?.id === "office" ? "Office" : otherUser?.name || "User"}
                   info="Active 10 mins ago"
@@ -260,7 +281,17 @@ export default function Home() {
                           sender: message.sender,
                           sentTime: message.sentTime,
                         }}
-                      />
+                      >
+                        {
+                          message.sender &&
+                          <Avatar
+                            src={users[message.sender].avatar || randomAvatar}
+                            status="available"
+                            style={conversationAvatarStyle}
+                          />
+                        }
+
+                      </Message>
                     ))}
               </MessageList>
               <MessageInput
