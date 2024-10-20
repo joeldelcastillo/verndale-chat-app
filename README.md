@@ -74,22 +74,26 @@ The `AuthContextProvider` is responsible for managing the authentication state o
 It contains the following data:
 
 ```jsx
+// Available at any time
+  users: Record<string, User>;
+  setUsers: (users: Record<string, User>) => void;
+  signUp: (email: string, password: string) => Promise<UserCredential>;
+  logIn: (email: string, password: string) => Promise<UserCredential>;
+  logOut: () => Promise<void>;
+
+// Available only once user is logged in
   currentUser: User;
   setCurrentUser: (user: User) => void;
   privateUser: PrivateUser;
   setCurrentPrivateUser: (user: PrivateUser) => void;
-  users: Record<string, User>;
-  setUsers: (users: Record<string, User>) => void;
   conversations: Record<string, Conversation>;
   setConversations: (conversations: Record<string, Conversation>) => void;
   messages: Record<string, Record<string, Message>>;
   setMessages: (messages: Record<string, Record<string, Message>>) => void;
-  signUp: (email: string, password: string) => Promise<UserCredential>;
-  logIn: (email: string, password: string) => Promise<UserCredential>;
-  logOut: () => Promise<void>;
+
 ```
 
-Example:
+Usage:
 
 ```jsx
 import { useAuth } from "@/providers/AuthProvider";

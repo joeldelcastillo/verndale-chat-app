@@ -36,7 +36,6 @@ export default function Home() {
       React.SetStateAction<Record<string, Record<string, MessageType>>>
     >;
   };
-  console.log(users);
 
   // Current conversation state
   const [loadingMessages, setLoadingMessages] = useState(true);
@@ -59,7 +58,7 @@ export default function Home() {
   // As soon as the current conversation changes, we need to fetch the messages
   // For next time we access the same conversation, we can use the cache
   useEffect(() => {
-    console.log(currentConversation);
+    // console.log(currentConversation);
     if (!currentConversation || !currentConversation.id) return;
 
     const messagesRef = getMessagesCollectionRef(currentConversation.id);
@@ -90,7 +89,7 @@ export default function Home() {
   const handleSend = (message: unknown) => {
     if (!currentConversation || !Auth || !Auth.currentUser || !otherUserId)
       return;
-    console.log(currentConversation);
+    // console.log(currentConversation);
     const newMessage: MessageType = {
       ...messageInitialState,
       message: String(message),
@@ -121,16 +120,16 @@ export default function Home() {
   const handleConversationClick = useCallback(
     (conversation: ConversationType) => {
       setCurrentConversation(conversation);
-    },
-    []
+      if (sidebarVisible) {
+        setSidebarVisible(false);
+      }
+    }, []
   );
 
   useEffect(() => {
     if (!currentConversation) return;
     const handleNewConversation = () => {
-      if (sidebarVisible) {
-        setSidebarVisible(false);
-      }
+
       const otherId = currentConversation.members.filter(
         (member) => member !== Auth.currentUser?.uid
       )[0]
