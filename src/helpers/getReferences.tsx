@@ -9,29 +9,34 @@ import { AlertType } from '@/components/Alert';
 
 
 export const getUserRef = (uid: string) => {
-  return doc(Firestore, 'users', uid).withConverter(userConverter);
+  return doc(Firestore, 'users', uid)
+    .withConverter(userConverter);
 };
 
 export const getUsersCollectionRef = () => {
-  return collection(Firestore, 'users').withConverter(userConverter);
+  return collection(Firestore, 'users')
+    .withConverter(userConverter);
 };
 
 export const getPrivateUserRef = (uid: string) => {
-  return doc(Firestore, 'users', uid, 'private', 'private').withConverter(privateUserConverter);
+  return doc(Firestore, 'users', uid, 'private', 'private')
+    .withConverter(privateUserConverter);
 };
 
 export const getMessagesCollectionRef = (conversationId: string) => {
-  return collection(Firestore, 'conversations', conversationId, 'messages').withConverter(messageConverter);
+  return collection(Firestore, 'conversations', conversationId, 'messages')
+    .withConverter(messageConverter);
 };
 
 export const getConversationRef = (conversationId: string) => {
-  return doc(Firestore, 'conversations', conversationId).withConverter(conversationConverter);
+  return doc(Firestore, 'conversations', conversationId)
+    .withConverter(conversationConverter);
 };
 
 // Puede dar error de limite de conversations
-export const getConversationsCollectionRef = (conversations: string[]) => {
-  if (conversations.length === 0 || !conversations) return;
-  return query(collection(Firestore, 'conversations'), where('id', 'in', conversations || [])).withConverter(conversationConverter);
+export const getConversationsCollectionRef = (uid: string) => {
+  return query(collection(Firestore, 'conversations'), where('members', 'array-contains', uid))
+    .withConverter(conversationConverter);
 };
 
 export const createUserProfile = async (uid: string, name: string, email: string, avatar: string, throwError?: (alert: AlertType, message: string) => void) => {

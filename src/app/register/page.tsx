@@ -20,8 +20,10 @@ const Register = () => {
     e.preventDefault();
 
     try {
+      let name = email.split('@')[0];
+      name = name.charAt(0).toUpperCase() + name.slice(1);
       const currentAuth = await createUserWithEmailAndPassword(Auth, email, password);
-      const createdUser = await createUserProfile(currentAuth.user.uid, email, email, "", alert.showAlert);
+      const createdUser = await createUserProfile(currentAuth.user.uid, name, email, "", alert.showAlert);
       if (!createdUser) return;
       alert.showAlert('Success', 'User created successfully!');
       setCurrentUser(createdUser);

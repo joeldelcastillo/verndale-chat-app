@@ -101,8 +101,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   // Fetch the conversations asynchronously when the user is logged in
   useEffect(() => {
     const fetchConversations = async () => {
-      if (!privateUser?.chats || privateUser?.chats.length === 0) return;
-      const conversationsRef = getConversationsCollectionRef(privateUser?.chats);
+      if (!Auth.currentUser) return;
+      const conversationsRef = getConversationsCollectionRef(Auth.currentUser.uid);
       if (!conversationsRef) return;
       const unsubscribe = onSnapshot(conversationsRef, (querySnapshot) => {
         setConversations((prevChats) => {
