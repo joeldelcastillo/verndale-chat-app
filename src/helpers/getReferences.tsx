@@ -47,6 +47,7 @@ export const createUserProfile = async (uid: string, name: string, email: string
   const user = { id: uid, name, email, avatar, isOnline: false, createdAt: new Date(), updatedAt: new Date() };
   const privateUser = { notifications: [], chats: ['office'] };
   const userDoc = await getDoc(userRef);
+  const officeRef = getConversationRef('office');
   if (userDoc.exists()) {
     console.log('User already exists in Firestore!');
     return userDoc.data();
@@ -60,6 +61,11 @@ export const createUserProfile = async (uid: string, name: string, email: string
       console.error(error);
       if (throwError) throwError('Error', error.message);
       return null;
+    });
+    // Add user to office conversation
+    await updateDoc(officeRef, { members: arrayUnion(uid) }).catch((error) => {
+      console.error(error);
+      if (throwError) throwError('Error', error.message);
     });
     return user;
   }

@@ -40,10 +40,84 @@ body {
   font-family: Inter, sans-serif;
 }
 
+.cs-message-group__header {
+  box-sizing: border-box;
+  display: flex;
+  font-size: 0.8em;
+  font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif;
+  color: rgba(0, 0, 0, 0.6);
+  background-color: transparent;
+  margin: 0 0 0.2em 0;
+  padding: 0;
+}
+.cs-message-group__footer {
+  box-sizing: border-box;
+  display: flex;
+  font-size: 0.8em;
+  font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif;
+  color: rgba(0, 0, 0, 0.6);
+  background-color: transparent;
+  margin: 0.2em 0 0 0;
+  padding: 0;
+}
+
+.cs-message-separator {
+  box-sizing: border-box;
+  color: #6ea9d7;
+  background-color: #fff;
+  font-size: 0.8em;
+  font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.cs-conversation-header {
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #f6fbff;
+  font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif;
+  font-size: 1em;
+  flex-shrink: 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  border-top: solid 0px #d1dbe3;
+  border-right: solid 0px #d1dbe3;
+  border-bottom: solid 1px #d1dbe3;
+  border-left: solid 0px #d1dbe3;
+  padding: 0.6em 0.9em;
+}
+
+.cs-conversation {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  position: relative;
+  font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif;
+  padding: 0.675em 0.8em 0.675em 0.8em;
+  cursor: pointer;
+  justify-content: flex-start;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #fff;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+}
+
 .cs-message {
   box-sizing: border-box;
   font-size: 1em;
-  font-family: Inter, sans-serif;
+  font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif;
   color: rgba(0, 0, 0, 0.87);
   display: flex;
   flex-direction: row;

@@ -5,8 +5,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { Auth } from "@/providers/config";
 import { Conversation, conversationInitialState } from "@/types/Conversation";
 import Link from "next/link";
-import { use, useRef, useState } from "react";
-import { Storage } from "@/providers/config";
+import { useRef, useState } from "react";
 import FileUpload from "./FileUpload";
 import { getUserRef } from "@/helpers/getReferences";
 import { updateDoc } from "firebase/firestore";
@@ -22,7 +21,7 @@ const Navbar = ({ setCurrentConversation }: NavbarProps) => {
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isChangingProfile, setIsChangingProfile] = useState(false);
-  const [avatarURL, setAvatarURL] = useState<string | null>(null);
+  const [, setAvatarURL] = useState<string | null>(null);
   const alert = useAlert();
 
   const { users } = useAuth();
@@ -60,9 +59,13 @@ const Navbar = ({ setCurrentConversation }: NavbarProps) => {
     try {
       await updateDoc(userRef, { avatar: url });
       await updateProfile(Auth.currentUser, { photoURL: url });
-    } catch (error: Error | any) {
+    } catch (error: Error | unknown) {
       console.error(error);
-      alert.showAlert('Error', error.message);
+      if (error instanceof Error) {
+        alert.showAlert('Error', error.message);
+      } else {
+        alert.showAlert('Error', 'An unknown error occurred');
+      }
       return;
     }
   }

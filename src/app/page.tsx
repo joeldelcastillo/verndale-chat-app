@@ -14,7 +14,7 @@ import {
   Sidebar,
   MessageSeparator,
 } from "@chatscope/chat-ui-kit-react";
-import { use, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useWindowSize from "../hooks/useWindow";
 import Navbar from "../components/Navbar";
 import { useAuth } from "@/providers/AuthProvider";
@@ -24,9 +24,7 @@ import { getMessagesCollectionRef, sendMessage } from "@/helpers/getReferences";
 import { onSnapshot } from "firebase/firestore";
 import { Auth } from "@/providers/config";
 import { User } from "@/types/User";
-// import { User } from "@/types/User";
 
-const kaiIco = "https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg";
 
 export default function Home() {
   // Context access
@@ -41,6 +39,7 @@ export default function Home() {
   console.log(users);
 
   // Current conversation state
+  const [loadingMessages, setLoadingMessages] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const [currentConversation, setCurrentConversation] =
     useState<ConversationType | null>(null);
@@ -56,6 +55,7 @@ export default function Home() {
   const [conversationContentStyle, setConversationContentStyle] = useState({});
   const [conversationAvatarStyle, setConversationAvatarStyle] = useState({});
 
+
   // As soon as the current conversation changes, we need to fetch the messages
   // For next time we access the same conversation, we can use the cache
   useEffect(() => {
@@ -64,6 +64,7 @@ export default function Home() {
 
     const messagesRef = getMessagesCollectionRef(currentConversation.id);
     // Would be awesome to add cache here
+    setLoadingMessages(true);
     const unsubscribe = onSnapshot(messagesRef, (querySnapshot) => {
       setMessages(
         (prevMessages: Record<string, Record<string, MessageType>>) => {
@@ -80,6 +81,7 @@ export default function Home() {
         }
       );
     });
+    setLoadingMessages(false);
 
     return () => unsubscribe();
   }, [currentConversation, setMessages]);
@@ -136,7 +138,7 @@ export default function Home() {
       if (users[otherId]) setOtherUser(users[otherId]);
     };
     handleNewConversation();
-  }, [currentConversation, setOtherUserId, sidebarVisible]);
+  }, [currentConversation, setOtherUserId, sidebarVisible, users]);
 
   useEffect(() => {
     if (sidebarVisible) {
@@ -261,6 +263,7 @@ export default function Home() {
               </ConversationHeader>
 
               <MessageList
+                loading={loadingMessages}
                 scrollBehavior="smooth"
                 typingIndicator={<TypingIndicator content="Emily is typing" />}
               >

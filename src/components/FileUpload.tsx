@@ -1,7 +1,6 @@
 import { SetStateAction, useState } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Storage } from '@/providers/config';
-import { on } from 'events';
 import { useAlert } from '@/hooks/useAlert';
 
 type FileUploadProps = {
@@ -32,7 +31,9 @@ export default function FileUpload({ setDownloadURL, onFileUploaded }: FileUploa
       // Get the download URL
       const url = await getDownloadURL(storageRef);
       setDownloadURL(url);
-      onFileUploaded && onFileUploaded(url);
+      if (onFileUploaded) {
+        onFileUploaded(url);
+      }
       alert.showAlert('Success', 'File uploaded successfully!');
     } catch (error) {
       console.error('Upload failed:', error);

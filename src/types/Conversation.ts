@@ -18,6 +18,7 @@ export class Conversation {
   updatedAt: Date;
   updatedBy: string;
   lastMessage: Message;
+  writing: string;
 
   constructor(data: Conversation) {
     this.id = data.id;
@@ -27,6 +28,7 @@ export class Conversation {
     this.updatedAt = data.updatedAt;
     this.updatedBy = data.updatedBy;
     this.lastMessage = data.lastMessage;
+    this.writing = data.writing;
   }
 }
 
@@ -40,6 +42,7 @@ export const conversationConverter = {
       updatedAt: conversation.updatedAt,
       updatedBy: conversation.updatedBy,
       lastMessage: conversation.lastMessage,
+      writing: conversation.writing,
     };
   },
   fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Conversation {
@@ -50,6 +53,7 @@ export const conversationConverter = {
       createdAt: data.createdAt ? (data.createdAt as unknown as Timestamp).toDate() : new Date(),
       updatedAt: data.updatedAt ? (data.updatedAt as unknown as Timestamp).toDate() : new Date(),
       createdBy: data.createdBy || '',
+      writing: data.writing || '',
       lastMessage: data.lastMessage
         ? { ...data.lastMessage, createdAt: data.lastMessage.createdAt ? (data.lastMessage.createdAt as unknown as Timestamp).toDate() : new Date() }
         : conversationInitialState.lastMessage,
@@ -64,6 +68,7 @@ export const conversationInitialState: Conversation = {
   createdBy: Auth.currentUser?.uid || '',
   updatedAt: serverTimestamp() as unknown as Date,
   updatedBy: Auth.currentUser?.uid || '',
+  writing: '',
   lastMessage: {
     id: '',
     conversation: '',
