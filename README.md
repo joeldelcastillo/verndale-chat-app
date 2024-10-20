@@ -59,3 +59,71 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **User authentication** with Firebase Auth.
 - **File upload** support with Firebase Storage.
 - **Responsive design** with Tailwind CSS.
+
+## State Management
+
+State management in this chat application is handled using React's Context API and Hooks. This approach allows for a centralized state management solution that is easy to understand and maintain.
+
+#### User Context
+
+The `AuthContextProvider` is responsible for managing the authentication state of the user. It provides the current user object and authentication methods to the components that need them.
+
+- **Provider**: The `UserProvider` component wraps the entire application and provides the user state and authentication methods.
+- **Consumer**: Any component that needs access to the user state can use the `useAuth` hook to consume the `AuthContext`.
+
+It contains the following data:
+
+```jsx
+  currentUser: User;
+  setCurrentUser: (user: User) => void;
+  privateUser: PrivateUser;
+  setCurrentPrivateUser: (user: PrivateUser) => void;
+  users: Record<string, User>;
+  setUsers: (users: Record<string, User>) => void;
+  conversations: Record<string, Conversation>;
+  setConversations: (conversations: Record<string, Conversation>) => void;
+  messages: Record<string, Record<string, Message>>;
+  setMessages: (messages: Record<string, Record<string, Message>>) => void;
+  signUp: (email: string, password: string) => Promise<UserCredential>;
+  logIn: (email: string, password: string) => Promise<UserCredential>;
+  logOut: () => Promise<void>;
+```
+
+Example:
+
+```jsx
+import { useAuth } from "@/providers/AuthProvider";
+
+export const UserProvider = ({ children }) => {
+  const { currentUser } = useAuth();
+  return <div>{currentUser.name}</div>;
+};
+```
+
+#### Alert Context
+
+The `AlertContextProvider` is responsible for managing the alerts across the system
+It contains the following data:
+
+```jsx
+type AlertType = "Success" | "Error" | "Warning";
+
+export type Alert = {
+  type: AlertType,
+  message: string,
+};
+```
+
+Usage:
+
+```jsx
+import { useAlert } from "@/providers/AlertProvider";
+
+export const UserProvider = ({ children }) => {
+  const alert = useAlert();
+
+  function alertToUser() {
+    alert.showAlert("Warning", "Login you in...");
+  }
+};
+```
