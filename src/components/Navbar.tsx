@@ -5,7 +5,13 @@ import { useAuth } from "@/providers/AuthProvider";
 import { Auth } from "@/providers/config";
 import { Conversation, conversationInitialState } from "@/types/Conversation";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { use, useRef, useState } from "react";
+import { Storage } from "@/providers/config";
+import FileUpload from "./FileUpload";
+import { getUserRef } from "@/helpers/getReferences";
+import { updateDoc } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
+import { useAlert } from "@/hooks/useAlert";
 
 type NavbarProps = {
   setCurrentConversation: (conversation: Conversation) => void;
@@ -15,6 +21,10 @@ type NavbarProps = {
 const Navbar = ({ setCurrentConversation }: NavbarProps) => {
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isChangingProfile, setIsChangingProfile] = useState(false);
+  const [avatarURL, setAvatarURL] = useState<string | null>(null);
+  const alert = useAlert();
+
   const { users } = useAuth();
 
   const signOut = async () => {
@@ -39,8 +49,26 @@ const Navbar = ({ setCurrentConversation }: NavbarProps) => {
     setCurrentConversation(newConversation);
   }
 
+  const openUpdateProfilePopUp = () => {
+    setIsChangingProfile(!isChangingProfile);
+  }
 
-  const randomAvatar = "https://imgv3.fotor.com/images/ai-headshot-generator/indoor-headshot-of-a-man-in-dark-blue-business-shirt-created-by-Fotor-AI-professional-LinkedIn-photo-maker.jpg";
+  const updateProfileUrl = async (url: string) => {
+    if (!Auth.currentUser) return;
+    const userRef = getUserRef(Auth.currentUser.uid);
+
+    try {
+      await updateDoc(userRef, { avatar: url });
+      await updateProfile(Auth.currentUser, { photoURL: url });
+    } catch (error: Error | any) {
+      console.error(error);
+      alert.showAlert('Error', error.message);
+      return;
+    }
+  }
+
+
+  const randomAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
   return (
     <nav className="bg-white border-gray-200 h-[10vh]">
@@ -83,7 +111,7 @@ const Navbar = ({ setCurrentConversation }: NavbarProps) => {
             <span className="sr-only">Open user menu</span>
             <img
               className="w-8 h-8 rounded-full object-cover"
-              src="https://imgv3.fotor.com/images/ai-headshot-generator/indoor-headshot-of-a-man-in-dark-blue-business-shirt-created-by-Fotor-AI-professional-LinkedIn-photo-maker.jpg"
+              src={Auth.currentUser?.photoURL || randomAvatar}
               alt="user photo"
             />
           </button>
@@ -101,6 +129,13 @@ const Navbar = ({ setCurrentConversation }: NavbarProps) => {
               <ul className="py-2" aria-labelledby="user-menu-button">
                 <li>
                   <a
+                    onClick={openUpdateProfilePopUp}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100  w-100 cursor-pointer"                >
+                    Update Profile
+                  </a>
+                </li>
+                <li>
+                  <a
                     onClick={signOut}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100  w-100 cursor-pointer"
                   >
@@ -112,11 +147,28 @@ const Navbar = ({ setCurrentConversation }: NavbarProps) => {
           )}
         </div>
 
+        {
+          isChangingProfile && (
+            <div
+              onClick={() => setIsChangingProfile(false)}
+              className="fixed inset-0 flex items-center justify-center z-10"
+            >
+              <div
+                onClick={(e) => e.stopPropagation()} // Prevents the click from closing the popup
+                className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
+              >
+                <FileUpload setDownloadURL={setAvatarURL} onFileUploaded={updateProfileUrl} />
+              </div>
+            </div>
+          )
+        }
+
         {isChatMenuOpen && (
           <div className="absolute right-10 top-12 z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow ">
             <ul className="py-2" aria-labelledby="user-menu-button">
               {
-                Object.values(users).map((user) => (
+                // Select all usrers except the current user to display in the chat menu
+                Object.values(users).filter((user) => user.id !== Auth.currentUser?.uid).map((user) => (
                   <li key={user.id}>
                     <button onClick={() => handleClickProfile(user.id)}
                       className="flex gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-100 cursor-pointer items-center justify-start">

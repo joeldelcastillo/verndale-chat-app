@@ -172,6 +172,8 @@ export default function Home() {
     setChatContainerStyle,
   ]);
 
+  const randomAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+
   return (
     <div>
       <Navbar setCurrentConversation={setCurrentConversation} />
@@ -188,24 +190,27 @@ export default function Home() {
                   key={index}
                   onClick={() => handleConversationClick(conversation)}
                 >
-                  <Avatar
-                    src={kaiIco}
-                    name="Lilly"
-                    status="available"
-                    style={conversationAvatarStyle}
-                  />
-                  <Conversation.Content
-                    name="Office"
-                    lastSenderName="Lilly"
-                    info={conversation.lastMessage.message}
-                    style={conversationContentStyle}
-                  />
-                  {/* <Avatar src={kaiIco} name={'Office'} status="available" style={conversationAvatarStyle} /> */}
+
+                  {
+                    conversation.lastMessage.sender &&
+                    <>
+                      <Avatar
+                        src={conversation.id === "office" ? randomAvatar : users[conversation.lastMessage.sender].avatar}
+                        status="available"
+                        style={conversationAvatarStyle}
+                      />
+                      <Conversation.Content
+                        name={conversation.id === "office" ? "Office" : users[conversation.lastMessage.sender].name}
+                        lastSenderName={users[conversation.lastMessage.sender].name || ''}
+                        info={conversation.lastMessage.message}
+                        style={conversationContentStyle}
+                      />
+                    </>
+                  }
                 </Conversation>
               ))}
             </ConversationList>
           </Sidebar>
-          {/* <ChatContainer style={chatContainerStyle}> */}
           {sidebarVisible === false ? (
             <ChatContainer style={chatContainerStyle}>
               <ConversationHeader>
@@ -227,7 +232,7 @@ export default function Home() {
                     </svg>
                   </button>
                 </ConversationHeader.Back>
-                <Avatar src={kaiIco} name="Zoe" />
+                <Avatar src={kaiIco} />
                 <ConversationHeader.Content
                   userName={currentConversation?.id === "office" ? "Office" : otherUser?.name || "User"}
                   info="Active 10 mins ago"
@@ -281,7 +286,12 @@ export default function Home() {
                     textAlign: "center",
                   }}
                 >
-                  {width}
+                  <div
+
+                    className="block px-4 py-2 text-sm text-gray-700 w-100"
+                  >
+                    Select a conversation to start chatting
+                  </div>
                 </MessageList.Content>
               </MessageList>
             </ChatContainer>
