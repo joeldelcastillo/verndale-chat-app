@@ -1,11 +1,18 @@
 // components/Navbar.js
 
+import { generateChatId } from "@/helpers/chatIdGenerator";
 import { useAuth } from "@/providers/AuthProvider";
 import { Auth } from "@/providers/config";
+import { Conversation, conversationInitialState } from "@/types/Conversation";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-const Navbar = () => {
+type NavbarProps = {
+  setCurrentConversation: (conversation: Conversation) => void;
+  // setMessages: (messages: Record<string, Record<string, any>>) => void;
+};
+
+const Navbar = ({ setCurrentConversation }: NavbarProps) => {
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { users } = useAuth();
@@ -16,21 +23,24 @@ const Navbar = () => {
 
   const imgRef = useRef<HTMLButtonElement | null>(null);
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (imgRef.current && !imgRef.current.contains(event.target as Node)) {
-      setIsChatMenuOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    // Add event listener
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // Clean up event listener on component unmount
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+  // Create a new Conversation with the other user
+  const handleClickProfile = (otherUserId: string) => {
+    // console.log(otherUserId);
+    if (!Auth.currentUser) return;
+    const newConversation: Conversation = {
+      ...conversationInitialState,
+      id: generateChatId(Auth.currentUser.uid, otherUserId),
+      members: [Auth.currentUser.uid, otherUserId],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: Auth.currentUser.uid,
     };
-  }, []);
+    setIsChatMenuOpen(false);
+    setCurrentConversation(newConversation);
+  }
+
+
+  const randomAvatar = "https://imgv3.fotor.com/images/ai-headshot-generator/indoor-headshot-of-a-man-in-dark-blue-business-shirt-created-by-Fotor-AI-professional-LinkedIn-photo-maker.jpg";
 
   return (
     <nav className="bg-white border-gray-200 h-[10vh]">
@@ -108,14 +118,15 @@ const Navbar = () => {
               {
                 Object.values(users).map((user) => (
                   <li key={user.id}>
-                    <a className="flex gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-100 cursor-pointer items-center justify-start">
+                    <button onClick={() => handleClickProfile(user.id)}
+                      className="flex gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-100 cursor-pointer items-center justify-start">
                       <img
                         className="w-8 h-8 rounded-full object-cover"
-                        src="https://imgv3.fotor.com/images/ai-headshot-generator/indoor-headshot-of-a-man-in-dark-blue-business-shirt-created-by-Fotor-AI-professional-LinkedIn-photo-maker.jpg"
+                        src={user.avatar || randomAvatar}
                         alt="user photo"
                       />
                       {user.email}
-                    </a>
+                    </button>
                   </li>
                 ))
               }

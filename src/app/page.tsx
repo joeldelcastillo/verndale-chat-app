@@ -40,6 +40,7 @@ export default function Home() {
   const { width, } = useWindowSize();
 
   useEffect(() => {
+    console.log(currentConversation);
     if (!currentConversation || !currentConversation.id) return;
 
     const messagesRef = getMessagesCollectionRef(currentConversation.id);
@@ -57,14 +58,12 @@ export default function Home() {
     });
 
     return () => unsubscribe();
-  }, [currentConversation]);
+  }, [currentConversation, setMessages]);
 
 
   // console.log(conversations);
 
   const handleSend = (message: unknown) => {
-
-
     if (!currentConversation || !Auth || !Auth.currentUser || !otherUserId) return;
     console.log(currentConversation);
     const newMessage: MessageType = {
@@ -102,21 +101,23 @@ export default function Home() {
   const handleBackClick = () => setSidebarVisible(!sidebarVisible);
 
   const handleConversationClick = useCallback((conversation: ConversationType) => {
-
-    if (sidebarVisible) {
-      setSidebarVisible(false);
-    }
     setCurrentConversation(conversation);
-    setOtherUserId(conversation.members.filter((member) => member !== Auth.currentUser?.uid)[0]);
-
-    // console.log(conversation, conversation.members.filter((member) => member !== Auth.currentUser?.uid)[0]);
-
-  }, [sidebarVisible, setSidebarVisible]);
+  }, []);
 
   useEffect(() => {
+    if (!currentConversation) return;
+    const handleNewConversation = () => {
+      if (sidebarVisible) {
+        setSidebarVisible(false);
+      }
+      setOtherUserId(currentConversation.members.filter((member) => member !== Auth.currentUser?.uid)[0]);
+    }
+    handleNewConversation();
+  }, [currentConversation, setOtherUserId, sidebarVisible]);
 
+
+  useEffect(() => {
     if (sidebarVisible) {
-
       setSidebarStyle({
         display: "flex",
         flexBasis: "auto",
@@ -146,7 +147,7 @@ export default function Home() {
 
   return (
     <div>
-      <Navbar />
+      <Navbar setCurrentConversation={setCurrentConversation} />
       <div style={{ height: "80vh", position: "relative" }}>
         <MainContainer responsive>
           {/* <Sidebar position="left" scrollable={false} style={sidebarStyle}> */}
@@ -185,20 +186,21 @@ export default function Home() {
 
                 <MessageList scrollBehavior="smooth" typingIndicator={<TypingIndicator content="Emily is typing" />}>
                   <MessageSeparator content="thursday, 15 July 2021" />
-                  {Object.values(messages[currentConversation?.id || ""] || {}).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-                    .map((message, index) => (
-                      <Message
-                        key={index}
-                        model={{
-                          message: message.message,
-                          direction: message.direction,
-                          position: message.position,
-                          type: message.type,
-                          sender: message.sender,
-                          sentTime: message.sentTime,
-                        }}
-                      />
-                    ))}
+                  {currentConversation &&
+                    Object.values(messages[currentConversation.id] || {}).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+                      .map((message, index) => (
+                        <Message
+                          key={index}
+                          model={{
+                            message: message.message,
+                            direction: message.direction,
+                            position: message.position,
+                            type: message.type,
+                            sender: message.sender,
+                            sentTime: message.sentTime,
+                          }}
+                        />
+                      ))}
                 </MessageList>
                 <MessageInput placeholder="Type message here" onSend={handleSend} onChange={setMsgInputValue} value={msgInputValue} ref={inputRef} />
               </ChatContainer>
