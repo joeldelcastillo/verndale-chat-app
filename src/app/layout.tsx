@@ -20,7 +20,12 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Verndale Chat App",
-  description: "Takehome project for Verndale",
+  description: "Takehome project for Verndale - Realtime Chat App",
+  openGraph: {
+    images: [{
+      url: "/screenshot.jpg",
+    }],
+  },
 };
 
 export default function RootLayout({

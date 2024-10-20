@@ -63,7 +63,7 @@ export const createUserProfile = async (uid: string, name: string, email: string
       return null;
     });
     // Add user to office conversation
-    await updateDoc(officeRef, { members: arrayUnion(uid) }).catch((error) => {
+    updateDoc(officeRef, { members: arrayUnion(uid) }).catch((error) => {
       console.error(error);
       if (throwError) throwError('Error', error.message);
     });

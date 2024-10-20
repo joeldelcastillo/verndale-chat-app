@@ -22,10 +22,10 @@ const Register = () => {
     try {
       let name = email.split('@')[0];
       name = name.charAt(0).toUpperCase() + name.slice(1);
-      alert.showAlert('Warning', 'Login you in...');
       const currentAuth = await createUserWithEmailAndPassword(Auth, email, password);
       const createdUser = await createUserProfile(currentAuth.user.uid, name, email, "", alert.showAlert);
       if (!createdUser) return;
+      alert.showAlert('Warning', 'Login you in...');
       alert.showAlert('Success', 'User created successfully!');
       setCurrentUser(createdUser);
       router.push("/");
@@ -38,10 +38,17 @@ const Register = () => {
           router.push("/");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
-          setError(err.message);
+
+          const error = err.message as string;
+          setError(error.split('Firebase: ')[1]);
+          alert.showAlert('Error', error.split('Firebase: ')[1]);
         }
       }
-      setError(err.message);
+      else {
+        const error = err.message as string;
+        setError(error.split('Firebase: ')[1]);
+        alert.showAlert('Error', error.split('Firebase: ')[1]);
+      }
     }
   };
 

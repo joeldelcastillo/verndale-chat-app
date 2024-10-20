@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Verndale Chat App
+
+This is a chat application built with [Next.js](https://nextjs.org) and [Firebase](https://firebase.google.com).
+
+![alt text](/public/screenshot.jpg)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/joeldelcastillo/verndale-chat-app.git
+   cd verndale-chat-app
+
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Run the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **src/components/**: Contains React components used throughout the application.
+  - **FileUpload.tsx**: Component for uploading files to Firebase Storage.
+  - **Navbar.tsx**: Component for the navigation bar.
+- **src/providers/**: Contains configuration and provider files.
+  - **config.ts**: Firebase configuration and initialization.
+- **public/**: Contains static assets such as images and icons.
+- **pages/**: Contains Next.js pages.
+- **layout.tsx**: The main entry point of the application.
+- **styles/**: Contains global styles and Tailwind CSS configuration.
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Real-time chat** functionality using Firebase Firestore.
+  - Direct Messages
+  - Group Messages
+- **User authentication** with Firebase Auth.
+- **File upload** support with Firebase Storage.
+- **Responsive design** with Tailwind CSS.
