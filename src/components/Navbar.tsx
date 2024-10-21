@@ -34,7 +34,7 @@ const Navbar = ({ setCurrentConversation }: NavbarProps) => {
 
   // Create a new Conversation with the other user
   const handleClickProfile = (otherUserId: string) => {
-    // console.log(otherUserId);
+
     if (!Auth.currentUser) return;
     const newConversation: Conversation = {
       ...conversationInitialState,
@@ -44,8 +44,9 @@ const Navbar = ({ setCurrentConversation }: NavbarProps) => {
       updatedAt: new Date(),
       createdBy: Auth.currentUser.uid,
     };
-    setIsChatMenuOpen(false);
+    console.log(newConversation);
     setCurrentConversation(newConversation);
+    setIsChatMenuOpen(false);
   }
 
   const openUpdateProfilePopUp = () => {

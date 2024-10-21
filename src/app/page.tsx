@@ -114,15 +114,12 @@ export default function Home() {
   };
 
   //Sidebar click handlers
-
   const handleBackClick = () => setSidebarVisible(!sidebarVisible);
 
   const handleConversationClick = useCallback(
     (conversation: ConversationType) => {
       setCurrentConversation(conversation);
-      if (sidebarVisible) {
-        setSidebarVisible(false);
-      }
+      setSidebarVisible(false);
     }, []
   );
 
@@ -130,6 +127,7 @@ export default function Home() {
     if (!currentConversation) return;
     const handleNewConversation = () => {
 
+      setSidebarVisible(false);
       const otherId = currentConversation.members.filter(
         (member) => member !== Auth.currentUser?.uid
       )[0]
@@ -137,7 +135,7 @@ export default function Home() {
       if (users[otherId]) setOtherUser(users[otherId]);
     };
     handleNewConversation();
-  }, [currentConversation, setOtherUserId, sidebarVisible, users]);
+  }, [currentConversation, setOtherUserId, users]);
 
   useEffect(() => {
     if (sidebarVisible) {
