@@ -37,11 +37,12 @@ export default function Home() {
     >;
   };
 
+
   // Current conversation state
+  const [filteredConversations, setFilteredConversations] = useState<ConversationType[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [currentConversation, setCurrentConversation] =
-    useState<ConversationType | null>(null);
+  const [currentConversation, setCurrentConversation] = useState<ConversationType | null>(null);
   const [otherUserId, setOtherUserId] = useState<string>();
   const [otherUser, setOtherUser] = useState<User | null>();
   const [msgInputValue, setMsgInputValue] = useState("");
@@ -58,7 +59,6 @@ export default function Home() {
   // As soon as the current conversation changes, we need to fetch the messages
   // For next time we access the same conversation, we can use the cache
   useEffect(() => {
-    // console.log(currentConversation);
     if (!currentConversation || !currentConversation.id) return;
 
     const messagesRef = getMessagesCollectionRef(currentConversation.id);
@@ -123,10 +123,20 @@ export default function Home() {
     }, []
   );
 
+  // Ensures that the user can only access the chat if they are members of the conversation
+  useEffect(() => {
+    setFilteredConversations(
+      Object.values(conversations).filter((conversation) =>
+        conversation.members.includes(Auth.currentUser?.uid || "")
+      )
+    );
+  }, [conversations]);
+
+  // When the current conversation changes, we need to update the
+  // other user's information
   useEffect(() => {
     if (!currentConversation) return;
     const handleNewConversation = () => {
-
       setSidebarVisible(false);
       const otherId = currentConversation.members.filter(
         (member) => member !== Auth.currentUser?.uid
@@ -223,7 +233,7 @@ export default function Home() {
             style={width && width < 576 ? sidebarStyle : {}}
           >
             <ConversationList>
-              {Object.values(conversations).map((conversation, index) => (
+              {Object.values(filteredConversations).map((conversation, index) => (
                 conversationAvatarContent(conversation, index)
               ))}
             </ConversationList>
