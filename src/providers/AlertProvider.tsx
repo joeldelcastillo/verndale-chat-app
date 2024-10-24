@@ -1,3 +1,5 @@
+// Implemented from https://medium.com/@mayankvishwakarma.dev/building-an-alert-provider-in-react-using-context-and-custom-hooks-7c90931de088
+
 "use client";
 import React, { ReactNode, createContext, useEffect, useState } from 'react';
 import Alert from '../components/Alert';

@@ -216,3 +216,16 @@ npm install
 ```bash
 firebase deploy --only functions
 ```
+
+## Where did I use Chat GPT
+
+- The Login Page
+- The Documentation
+- JSON Generation for the images Structure
+- Copilot for the AI coding assistance
+
+## Other Resources
+
+- UI KIT: [@chatscope/chat-ui-kit-react](https://chatscope.io/storybook/react/)
+- Alert Provider: [Medium: Building an Alert Provider in React Using Context and Custom Hooks](https://medium.com/@mayankvishwakarma.dev/building-an-alert-provider-in-react-using-context-and-custom-hooks-7c90931de088)
+- Firebase Image Handler: [Firebase Extension and Custom Controllers](https://github.com/firebase/extensions/tree/master/storage-resize-images)
