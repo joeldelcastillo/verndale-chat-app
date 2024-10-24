@@ -58,7 +58,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
   - Group Messages
 - **User authentication** with Firebase Auth.
 - **File upload** support with Firebase Storage.
-- **Responsive design** with Tailwind CSS.
+- **Responsive design** with Tailwind CSS and [@chatscope/chat-ui-kit-react](https://chatscope.io/storybook/react/)
 
 ## State Management
 
@@ -130,4 +130,89 @@ export const UserProvider = ({ children }) => {
     alert.showAlert("Warning", "Login you in...");
   }
 };
+```
+
+## Database Structure
+
+This is a Firestore document based Non SQL Database Structure:
+
+![alt text](/public/database.png)
+
+- Why do I separate the User from the PrivateUser?
+  Firebase Rules for security measures can only declare which documents can or cannot access a user.
+  Therefore, we have to separate those records to have security logic in the future.
+
+## Messaging System Logic
+
+![alt text](/public/chat.png)
+
+The system is designed to handle direct messaging (DM) between users, creating conversations dynamically, and retrieving messages in real-time.
+
+### Users
+
+Each user has a unique profile stored in Firestore under /users/<userId>.
+A user can have multiple conversations listed in their ChatList[] array.
+
+### Conversations
+
+A new conversation is initiated by generating a new conversation ID.
+Messages for a conversation are stored under /conversations/<conversationId>/messages.
+
+### Logic Flow
+
+1. Generating a Conversation:
+   When two users start a DM, the function generateConversation(userId1, userId2) is called.
+
+This generates a unique conversation ID (newId).
+
+### Firestore Collections:
+
+1. A new chat document is created under /conversations/<newId>.
+   This new conversation is then added to:
+   user1's ChatList[] (Firestore path: /users/<userId1>)
+   user2's ChatList[] (Firestore path: /users/<userId2>) 2. Creating the Chat Document:
+   Once a new conversation is generated:
+2. A Chat document is created in the Firestore collection /chats/<newId>.
+   The conversation ID (newId) is added to both users' ConversationList[].
+   Firestore Paths:
+   /users/<userId1> for User 1
+   /users/<userId2> for User 2
+3. Retrieving Chat and Messages:
+   The system listens for real-time updates using Firestore's onSnapshot feature.
+   It retrieves the chatDoc from the /chats/<newId> document and listens to the associated messages stored in the /conversations/<newId>/messages subcollection.
+   This ensures that both users receive updates to the conversation in real time.
+4. Writing and Updating Messages:
+   When a user sends a message, the function generateMessageDoc(sender, receiver, timestamp, message) is invoked to create a message document with all necessary metadata.
+
+This message is then:
+
+5. Appended to the messages subcollection /conversations/<conversationId>/messages.
+6. The corresponding chat document is updated with the latest message under /conversations/<conversationId>.
+7. Real-time Message Delivery:
+   Once a message is appended, the onSnapshot listener retrieves the latest messages for the users involved.
+   Both users will see the conversation updated in real time without needing to refresh or query for updates manually.
+
+## Cloud Functions for Firebase Image Handler
+
+This project also contains Firebase Cloud Functions written in TypeScript.
+Custom Event Handling with Firebase Extensions - Image Handler
+
+### Prerequisites
+
+Before setting up the project, make sure you have the following installed:
+
+1. [Node.js](https://nodejs.org/) (version 14 or higher)
+2. [Firebase CLI](https://firebase.google.com/docs/cli) (version 11.0.0 or higher)
+
+### Install Dependencies
+
+```bash
+cd functions
+npm install
+```
+
+### Deploy Functions
+
+```bash
+firebase deploy --only functions
 ```
